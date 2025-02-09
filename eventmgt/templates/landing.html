@@ -1,0 +1,80 @@
+{% extends "index.html" %}
+{% load static %}
+{% block title %}
+<title>Event Management</title>
+{% endblock title %}
+{% block main-content %}
+<div class="max-w-[1440px] mx-auto">
+  <div class="relative bg-cover bg-center w-full h-[550px] sm:h-[380px] md:h-[350px] lg:h-[300px]" style="background-image: url('{% static "images/LAN-Event.jpg" %}');">
+    <!-- Blur Overlay -->
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm">
+      <!-- Grid: Horizontally Centered Only -->
+      <div class="grid grid-cols-1 justify-items-center text-white mt-10 gap-4">
+        <div><h1 class="text-3xl font-bold">Welcome to Event Management System</h1></div>
+        <div class="w-1/2 text-justify mt-3"><p>
+          An Event Management System provides a seamless platform where users can register, plan, and participate in events effortlessly. Organizers can create and manage events, set schedules, and track registrations, while participants can browse upcoming events, sign up, and engage with event activities. With an intuitive interface and real-time updates, the system ensures smooth coordination, enhancing the overall event experience for both planners and attendees.</p></div>        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="max-w-[1440px] mx-auto mt-8 w-full">
+  <div class="grid md:grid-cols-8 grid-cols-1 gap-12">
+      <div class="col-span-1 md:col-span-5 shadow w-full bg-gray-100 ">
+        <div class="flex justify-between flex-wrap px-5 mt-2">
+          <h1 class="text-2xl font-bold underline">Events</h1>
+          <div class="flex gap-2 flex-wrap">
+            <form method="GET" action="{% url 'home_view' %}" class="flex items-center gap-2 mb-5">
+              <input type="text" name="q" value="{{ query }}" placeholder="Search events..." 
+                     class="border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
+          </form>
+          </div>
+        </div>
+        <table class="table-fixed w-full border-collapse border border-gray-300 mt-4">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border border-gray-300 px-4 py-2 w-1/4">Event Name</th>
+              <th class="border border-gray-300 px-4 py-2 w-1/4">Event Location</th>
+              <th class="border border-gray-300 px-4 py-2 w-1/4">Event Date</th>
+              <th class="border border-gray-300 px-4 py-2 w-1/4">Event Participants</th>
+              <th class="border border-gray-300 px-4 py-2 w-1/4">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for event in events %}
+              <tr>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.name }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.location }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.date }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.status }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center text-blue-800"><a href={% url "event-detail" event.id %}>Detail</a></td>
+                </tr>
+              {% endfor %}
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="md:col-span-3 col-span-1 shadow w-full bg-gray-100 ">
+        <div class="flex justify-between flex-wrap px-5 mt-2">
+          <h1 class="text-2xl font-bold underline">Top Participants</h1>
+        </div>
+        <table class="table-fixed w-full border-collapse border border-gray-300 mt-4">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border border-gray-300 px-4 py-2 w-1/2">Participant Name</th>
+              <th class="border border-gray-300 px-4 py-2 w-1/2">Events Participated</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for participant in participants %}
+                  <tr>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ participant.name }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ participant.event_count }}</td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+{% endblock main-content %}

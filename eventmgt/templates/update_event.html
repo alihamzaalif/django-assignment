@@ -1,0 +1,15 @@
+<!-- update_event.html -->
+
+{% extends "index.html" %}
+{% block title %}
+<title>Update Event {{event.name}}</title>
+{% endblock title %}
+{% block main-content %}
+<div class="w-1/2 mx-auto mt-8">
+    <form method="POST">
+        {% csrf_token %}
+        {{ event_form.as_p }}
+        <button type="submit" class="bg-rose-600 px-3 py-2 text-white mt-2 rounded-md">Update</button>
+    </form>
+</div>
+{% endblock main-content %}

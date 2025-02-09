@@ -1,0 +1,90 @@
+{% extends "index.html" %}
+{% block title %}
+<title>Organizer Dashboard</title>
+{% endblock title %}
+
+{% block main-content %}
+<div class="max-w-6xl mx-auto mt-8">
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <a href="?type=total" class="bg-white shadow-md p-6 rounded-lg block {% if selected_type == 'total' %}border-2 border-blue-500{% endif %}">
+          <h2 class="text-lg font-semibold">Total Events</h2>
+          <p class="text-3xl font-bold">{{ total_events }}</p>
+      </a>
+      <a href="?type=upcoming" class="bg-white shadow-md p-6 rounded-lg block {% if selected_type == 'upcoming' %}border-2 border-blue-500{% endif %}">
+          <h2 class="text-lg font-semibold">Upcoming Events</h2>
+          <p class="text-3xl font-bold">{{ upcoming_events }}</p>
+      </a>
+      <a href="?type=past" class="bg-white shadow-md p-6 rounded-lg block {% if selected_type == 'past' %}border-2 border-blue-500{% endif %}">
+          <h2 class="text-lg font-semibold">Past Events</h2>
+          <p class="text-3xl font-bold">{{ past_events }}</p>
+      </a>
+      <a href="?type=people" class="bg-white shadow-md p-6 rounded-lg block {% if selected_type == 'people' %}border-2 border-blue-500{% endif %}">
+          <h2 class="text-lg font-semibold">Total Participants</h2>
+          <p class="text-3xl font-bold">{{ total_participants }}</p>
+      </a>
+  </div>
+
+  <!-- Filtered Event List -->
+  <div class="mt-8">
+      <h2 class="text-2xl font-bold underline">
+          {% if selected_type == 'today' %}
+          Today's Events
+          {% elif selected_type == 'total' %}
+          All Events
+          {% elif selected_type == 'upcoming' %}
+          Upcoming Events
+          {% elif selected_type == 'past' %}
+          Past Events
+          {% elif selected_type == 'people' %}
+          Participants
+          {% endif %}
+      </h2>
+
+      <table class="table-auto w-full border-collapse border border-gray-300 mt-4">
+          <thead>
+              <tr class="bg-gray-200">
+                {% if selected_type == 'people' %}
+                <th class="border border-gray-300 px-4 py-2">Name</th>
+                <th class="border border-gray-300 px-4 py-2">Email</th>
+                <th class="border border-gray-300 px-4 py-2">Events</th>
+                {% else %}
+                  <th class="border border-gray-300 px-4 py-2">Event Name</th>
+                  <th class="border border-gray-300 px-4 py-2">Location</th>
+                  <th class="border border-gray-300 px-4 py-2">Date</th>
+                  <th class="border border-gray-300 px-4 py-2">Actions</th>
+                {% endif %}
+              </tr>
+          </thead>
+          <tbody>
+            {% if selected_type == 'people' %}
+            {% for participant in participants %}
+              <tr>
+                <td class="border border-gray-300 px-4 py-2 text-center">{{ participant.name }}</td>
+                <td class="border border-gray-300 px-4 py-2 text-center">{{ participant.email }}</td>
+                <td class="border border-gray-300 px-4 py-2 text-center">{{ participant.event_count }}</td>
+            </tr>
+            {% empty %}
+              <tr>
+                  <td colspan="3" class="text-center py-4">No participant found.</td>
+              </tr>
+            {% endfor %}
+            {% else %}
+              {% for event in events %}
+              <tr>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.name }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.location }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">{{ event.date }}</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center"><a href={% url "update-event" event.id %} class="text-blue-700">Update</a> <a href={% url "delete-event" event.id %} class="text-red-700">Delete</a></td>
+              </tr>
+              {% empty %}
+              <tr>
+                  <td colspan="3" class="text-center py-4">No events found.</td>
+              </tr>
+              {% endfor %}
+              {% endif %}
+          </tbody>
+      </table>
+  </div>
+</div>
+{% endblock main-content %}

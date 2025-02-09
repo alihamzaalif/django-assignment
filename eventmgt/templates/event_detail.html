@@ -1,0 +1,27 @@
+{% extends "index.html" %}
+{% block title %}
+<title>Organizer Dashboard</title>
+{% endblock title %}
+{% block main-content %}
+    <div class="max-w-[1440px] mx-auto mt-8 w-full">
+        <div>
+            <h1 class="text-3xl text-center font-bold">Details of {{event.name}}</h1>
+            <ul>
+                <li>Event Name: {{event.name}}</li>
+                <li>Event Date: {{event.date}}</li>
+                <li>Event Time: {{event.time}}</li>
+                <li>Event Location: {{event.location}}</li>
+                <li>Event Status: {{event.status}}</li>
+                <li>Event Category: {{event.category}}</li>
+            </ul>
+            <h2 class="text-2xl font-semibold mt-4">Participants:</h2>
+            <ul class="list-disc ml-5">
+            {% for participant in event.enrld.all %}
+                <li>{{ participant.name }} - {{ participant.email }}</li>
+            {% empty %}
+                <li class="text-gray-500">No participants yet.</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock main-content %}

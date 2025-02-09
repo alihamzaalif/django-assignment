@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% block title %}
+<title>Delete Event {{event.name}}</title>
+{% endblock title %}
+{% block main-content %}
+<div class="w-1/2 mx-auto mt-8">
+    <form method="POST">
+        {% csrf_token %}
+        <p>Are you sure you want to delete the event titled "{{event.name}}"?</p>
+        <button type="submit" class="bg-red-500 px-3 py-2 text-white mt-2 rounded-md">Delete</button>
+    </form>
+</div>
+{% endblock main-content %}
