@@ -1,8 +1,13 @@
 from django import forms
 from eventmgt.models import Participants, Event, Category
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+import re
 class StyledFormMixin:
     """Mixins to appply style to form"""
+    def __init__(self, *arg, **kwarg):
+        super().__init__(*arg, **kwarg)
+        self.apply_styled_widgets()
     default_classes = "border-2 border-gray-300 w-full p-3 rounded-lg shadow-sm focus:outline-none focus:border-rose-500 focus:ring-rose-500 hover:border-rose-500"
 
     def apply_styled_widgets(self):
@@ -97,3 +102,54 @@ class ParticipantModelForm(StyledFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.apply_styled_widgets()
 
+class RegisterForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'password1', 'password2', 'email']
+
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+
+        for fieldname in ['username', 'password1', 'password2']:
+            self.fields[fieldname].help_text=None
+
+class CustomRegistrationForm(StyledFormMixin, forms.ModelForm):
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'password1', 'confirm_password', 'email']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        email_exists = User.objects.filter(email=email).exists()
+
+        if email_exists:
+            raise forms.ValidationError("Email already exists")
+        
+    def clean_password1(self): #field error
+        password1 = self.cleaned_data.get('password1')
+        errors = []
+
+        if len(password1) < 8:
+            errors.append("Password must be at least 8 character long""Password must be at least 8 character long")
+            
+        if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password1):
+            errors.append("Password must include Uppercase, Lowercase, Number and special characters")
+
+        if errors:
+            raise forms.ValidationError(errors)
+        
+        return password1
+    
+    def clean(self): #non field error
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password1 != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+        
+        return cleaned_data
+
+        

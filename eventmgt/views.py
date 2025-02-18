@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from datetime import date
 from django.shortcuts import render
+from django.contrib import messages
 from django.utils.timezone import now
 from django.db.models import Q, Count, Max, Min, Avg
 from eventmgt.models import Event, Participants, Category
-from eventmgt.forms import EventModelForm, CategoryModelForm, ParticipantModelForm
-
+from eventmgt.forms import EventModelForm, RegisterForm, CustomRegistrationForm, CategoryModelForm, ParticipantModelForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.contrib.auth import login, logout, authenticate
 def home_view(request):
     query = request.GET.get('q', '')
     events = Event.objects.all()
@@ -108,3 +111,38 @@ def add_participant(request):
             return redirect('home_view')
     context = {"participant_form": participant_form}
     return render(request, "add_participant.html", context)
+
+def sign_up(request):
+    if request.method == 'GET':
+        form = CustomRegistrationForm()
+    if request.method == 'POST':
+        form = CustomRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data.get('password1'))
+            user.is_active = False
+            user.save()
+            messages.success(request,'A confirmation mail has been sent. Please check your email')
+            return redirect('log-in')
+        else:
+            print("Form is invalid")
+    return render(request, 'registration/register.html',{'form':form})
+
+def sign_in(request):
+    if request.method == 'POST':
+      username = request.POST.get('username')
+      password = request.POST.get('password')
+
+      user = authenticate(username=username, password=password)
+
+      if user is not None:
+          login(request,user)
+          redirect("home_view")
+      else:
+          return render(request,'registration/login.html', {'error':'invalid username or password'})
+    return render(request, 'registration/login.html')
+
+def sign_out(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect('log-in')
