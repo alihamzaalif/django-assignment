@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils.timezone import now
 from django.db.models import Q, Count, Max, Min, Avg
 from eventmgt.models import Event, Participants, Category
-from eventmgt.forms import EventModelForm, RegisterForm, CustomRegistrationForm, CategoryModelForm, ParticipantModelForm
+from eventmgt.forms import EventModelForm, LoginForm, RegisterForm, CustomRegistrationForm, CategoryModelForm, ParticipantModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -129,17 +129,13 @@ def sign_up(request):
     return render(request, 'registration/register.html',{'form':form})
 
 def sign_in(request):
+    form = LoginForm()
     if request.method == 'POST':
-      username = request.POST.get('username')
-      password = request.POST.get('password')
-
-      user = authenticate(username=username, password=password)
-
-      if user is not None:
+      form = LoginForm(data=request.POST)
+      if form.is_valid():
+          user = form.get_user()
           login(request,user)
-          redirect("home_view")
-      else:
-          return render(request,'registration/login.html', {'error':'invalid username or password'})
+          return redirect('home_view')
     return render(request, 'registration/login.html')
 
 def sign_out(request):

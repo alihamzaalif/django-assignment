@@ -2,6 +2,7 @@ from django import forms
 from eventmgt.models import Participants, Event, Category
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 import re
 class StyledFormMixin:
     """Mixins to appply style to form"""
@@ -151,5 +152,9 @@ class CustomRegistrationForm(StyledFormMixin, forms.ModelForm):
             raise forms.ValidationError("Passwords do not match")
         
         return cleaned_data
+
+class LoginForm(StyledFormMixin, AuthenticationForm):
+    def __init__(self, *arg, **kwargs):
+        super().__init__(*arg, **kwargs)
 
         
